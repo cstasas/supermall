@@ -8,6 +8,7 @@ const Home = () => import('../views/home/Home')
 const CateGory = () => import('../views/category/CateGory')
 const Cart = () => import('../views/cart/Cart')
 const ProFile = () => import('../views/profile/ProFile')
+const Detail = () => import('../views/detail/Detail')
 
 export default new Router({
   routes: [
@@ -16,6 +17,7 @@ export default new Router({
     { path: '/category', component: CateGory },
     { path: '/cart', component: Cart },
     { path: '/profile', component: ProFile },
+    { path: '/detail/:id', component: Detail }
   ],
   mode: 'history'
 })

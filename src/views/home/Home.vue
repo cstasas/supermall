@@ -28,14 +28,13 @@
   import TabControl from "components/content/tabControl/TabControl";
   import GoodsList from "components/content/goodsList/GoodsList";
   import Scroll from "components/common/scroll/Scroll";
-  import BackTop from "components/content/backTop/BackTop";
 
   import HomeSwipe from "./childComs/HomeSwipe";
   import HomeRecommend from "./childComs/HomeRecommend";
   import FeatureView from "./childComs/FeatureView";
 
   import { getHomeMultidata, getHomeGoodsList } from 'network/home.js'
-  import { debounce } from 'common/utils.js'
+  import { imgListenerMixin, backTop } from "common/mixin";
 
   export default {
     name: "Home",
@@ -44,11 +43,11 @@
       TabControl,
       GoodsList,
       Scroll,
-      BackTop,
       HomeSwipe,
       HomeRecommend,
       FeatureView
     },
+    mixins: [imgListenerMixin, backTop],
     data() {
       return {
         // 轮播图数据
@@ -62,20 +61,17 @@
           'sell': { page: 0, list: [] }
         },
         goodsType: 'pop',
-        isShow: false,
         isTabControl: false,
         tabOffsetTop: 0,
         scrollYy: 0
       }
     },
     activated() {
-      this.$refs.scroll.backToTheHomepage(0, this.scrollYy, 0)
+      this.$refs.scroll.scroll.scrollTo(0, this.scrollYy, 10)
       this.$refs.scroll.imageReload()
-      console.log(this.scrollYy);
     },
     deactivated() {
       this.scrollYy = this.$refs.scroll.getScrollY()
-      console.log(this.scrollYy);
     },
     created() {
       // 获取首页数据
@@ -84,13 +80,6 @@
       this.getHomeGoodsList('pop')
       this.getHomeGoodsList('new')
       this.getHomeGoodsList('sell')
-    },
-    mounted() {
-      // 监听图片全部加载完之后再重新计算高度
-      const refresh = debounce(this.$refs.scroll.imageReload, 50)
-      this.$bus.$on('imageLoad', () => {
-        refresh()
-      })
     },
     methods: {
       // 监听触发事件
@@ -109,11 +98,8 @@
         this.$refs.control1.toggleTab = index
         this.$refs.control2.toggleTab = index
       },
-      backClick() {
-        this.$refs.scroll.backToTheHomepage()
-      },
       scrollY(position) {
-        this.isShow = (-position.y) > 1000 ? this.isShow = true : this.isShow = false
+        (-position.y) > 1000 ? this.isShow = true : this.isShow = false
         this.isTabControl = (-position.y) > this.tabOffsetTop
       },
       pullingUp() {
@@ -160,6 +146,7 @@
   .home_bgc {
     background-color: var(--color-tint);
     color: var(--color-background);
+    font-weight: 700;
     position: fixed;
     top: 0;
     left: 0;
