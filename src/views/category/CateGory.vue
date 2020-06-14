@@ -3,13 +3,16 @@
     <nav-bar class="nav_bar">
       <div slot="nav_bar_center">商品分类</div>
     </nav-bar>
-    <scroll class="content">
       <div class="category_container">
         <category-goods-title class="category_category_container_left"
-                              :category-title="categoryListTitle"/>
-        <category-goods-item class="category_category_container_right"/>
+                              :category-title="categoryListTitle"
+                              @tabClick="tabClick"/>
+        <scroll class="content" ref="scroll">
+          <category-goods-item class="category_category_container_right"
+                               :category-data="categoryData"
+                               @imageLoad="imageLoad"/>
+        </scroll>
       </div>
-    </scroll>
   </div>
 </template>
 
@@ -32,13 +35,38 @@
     },
     data() {
       return {
-        categoryListTitle:[]
+        categoryListTitle:[],
+        categoryData: [],
+        currentIndex: 0
       }
     },
     created() {
-      goodsCategoryList().then(res => {
-        this.categoryListTitle = res.data.category.list
-      })
+      this._goodsCategoryList()
+    },
+    methods: {
+      // 获取商品分类文字数据
+      _goodsCategoryList() {
+        goodsCategoryList().then(res => {
+          this.categoryListTitle = res.data.category.list
+          // 请求第一个分类的数据
+          this._getSubcategories(this.currentIndex)
+        })
+      },
+      // 获取商品分类数据
+      _getSubcategories(index) {
+        this.currentIndex = index
+        const mailKey = this.categoryListTitle[index].maitKey
+        getSubcategory(mailKey).then(res => {
+          this.categoryData = res.data.list
+        })
+      },
+      tabClick(index) {
+        this.$refs.scroll.scroll.scrollTo(0, 0, 0)
+        this._getSubcategories(index)
+      },
+      imageLoad() {
+        this.$refs.scroll.imageReload()
+      }
     }
   }
 </script>
@@ -57,16 +85,17 @@
     right: 0;
     z-index: 9;
   }
-  .content {
-    height: calc(100% - 45px - 49px);
-  }
   .category_container {
     display: flex;
+    height: 100vh;
+  }
+  .content {
+    flex: 6;
+    height: calc(100% - 45px - 49px);
   }
   .category_category_container_left {
     flex: 2;
   }
   .category_category_container_right {
-    flex: 6;
   }
 </style>

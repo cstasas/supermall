@@ -3,8 +3,13 @@
     <nav-bar class="nav_bar">
       <div slot="nav_bar_center">购物车({{cartLength}})</div>
     </nav-bar>
-    <scroll class="content" ref="scroll">
+    <scroll class="content" ref="scroll" v-if="cartLength !== 0">
       <cart-list :cart-list="cartList"/>
+    </scroll>
+    <scroll class="content" ref="scroll" v-else>
+      <div class="cart_bgc">
+        <img src="https://shop.test.dudugua.com/public/mobile/static/images/kongb4.png" alt="">
+      </div>
     </scroll>
     <cart-bottom-bar class="cart_bottom_bar"/>
   </div>
@@ -60,5 +65,12 @@
     bottom: 0;
     left: 0;
     right: 0;
+  }
+  .cart_bgc {
+    width: 100%;
+    height: calc(100vh - 45px - 49px - 40px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 </style>
